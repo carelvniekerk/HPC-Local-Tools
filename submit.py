@@ -1,0 +1,134 @@
+# coding=utf-8
+# --------------------------------------------------------------------------------
+# Project: Training Project
+# Author: Carel van Niekerk
+# Year: 2024
+# Group: Dialogue Systems and Machine Learning Group
+# Institution: Heinrich Heine University Düsseldorf
+# --------------------------------------------------------------------------------
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License."
+
+import os
+import subprocess
+import sys
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+
+USER_NAME = "niekerk"
+LOGIN_NODE = "hpc.rz.uni-duesseldorf.de"
+STORAGE_NODE = "storage.hpc.rz.uni-duesseldorf.de"
+REMOTE_BASE = "/gpfs/project/niekerk/src"
+
+
+def sync_project():
+    local_dir = os.getcwd()
+
+    # Sync local directory with remote directory, excluding .venv
+    print("Synchronizing files...")
+    rsync_command = [
+        "rsync",
+        "-avz",
+        "--progress",
+        "--exclude",
+        ".venv",
+        "--exclude",
+        "poetry.lock",
+        local_dir,
+        f"{USER_NAME}@{STORAGE_NODE}:{REMOTE_BASE}/",
+    ]
+    try:
+        subprocess.run(rsync_command, check=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Error during rsync: {e}")
+
+
+def get_submission_command():
+    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-n", "--job_name", help="Job Name", default="", type=str)
+    parser.add_argument(
+        "-s", "--job_script", help="Path to job script", required=True, type=str
+    )
+    parser.add_argument(
+        "-a",
+        "--job_script_args",
+        help="Arguments for the job script",
+        default="",
+        type=str,
+    )
+
+    parser.add_argument("--template", help="Job Queue", default="")
+    parser.add_argument("--queue", help="Job Queue", default="DSML")
+    parser.add_argument("--ncpus", help="Number of CPUs", default=2, type=int)
+    parser.add_argument("--memory", help="Amount of memory in GB", default=32, type=int)
+    parser.add_argument("--ngpus", help="Number of GPUs", default=1, type=int)
+    parser.add_argument("--accelerator_model", help="GPU model", default=None)
+    parser.add_argument(
+        "--walltime",
+        help="Walltime in format hh:mm:ss, eg 08:00:00",
+        default="36:00:00",
+        type=str,
+    )
+    args = parser.parse_args()
+
+    args.job_script = os.path.join(
+        "src",
+        os.path.basename(os.getcwd()),
+        args.job_script,
+    )
+
+    command = [
+        "submit_job",
+        "-n",
+        args.job_name,
+        "-s",
+        args.job_script,
+        "--ncpus",
+        str(args.ncpus),
+        "--memory",
+        str(args.memory),
+        "--ngpus",
+        str(args.ngpus),
+        "--walltime",
+        args.walltime,
+    ]
+    if args.job_script_args:
+        command.extend(["-a", args.job_script_args])
+    if args.template:
+        command.extend(["--template", args.template])
+    if args.queue:
+        command.extend(["--queue", args.queue])
+    if args.accelerator_model:
+        command.extend(["--accelerator_model", args.accelerator_model])
+    command = " ".join(command)
+    command = f"bash -ci 'base && home && {command}'"
+    return command
+
+
+def sync_and_submit():
+    sync_project()
+
+    # Submit the job via SSH
+    print("Submitting job...")
+    command = get_submission_command()
+    print(command)
+    ssh_command = ["ssh", "-A", f"{USER_NAME}@{LOGIN_NODE}", command]
+    try:
+        subprocess.run(ssh_command, check=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Error during submission: {e}")
+
+    print("Job submitted successfully.")
+
+
+if __name__ == "__main__":
+    sync_and_submit()
