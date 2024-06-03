@@ -1,0 +1,1 @@
+fpath=($HOME/.oh-my-zsh/plugins/hpc_tools $fpath)

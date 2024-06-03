@@ -1,0 +1,18 @@
+#compdef hpc
+
+_hpc() {
+    local -a commands
+    commands=(
+        'run:Run a python or bash script on the HPC'
+        'status:Check the status of the jobs and queues on the HPC'
+        'setup_interactive:Setup an interactive session on the HPC'
+        'ssh:Connect to the HPC Login node'
+        'qi:Start an interactive session on the HPC'
+        'log:Connect to the logs of running jobs on the HPC'
+        'cmd:Run a command on the HPC Login node'
+    )
+
+    _describe 'command' commands
+}
+
+compdef _hpc hpc
