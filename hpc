@@ -1,0 +1,69 @@
+#!/bin/zsh
+
+# Tool name: hpc
+
+export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
+
+# Command Aliases
+alias run_command="${PYTHON_INTERPRETER} ${TOOLS_DIR}/submit.py"
+alias status_command="ssh Hilbert -t \"bash -ci 'base && qs'\""
+alias setup_interactive_command="ssh Hilbert -t \"bash -ci 'base && qi-setup'\""
+alias start_interactive_command="ssh Hilbert -t \"bash -ci 'base && qi'\""
+alias connect_to_logs_command="ssh Hilbert -t \"bash -ci 'base && home && job_log'\""
+
+# Alias for syncing local huggingface models with HPC
+alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface Hilbert-Storage:/gpfs/project/niekerk/models/"
+
+# Function to display the usage of the tool
+usage() {
+    echo "Usage: hpc <command>"
+    echo "Commands:"
+    echo "  run   Run a python or bash script on the HPC"
+    echo "  status   Check the status of the jobs and queues on the HPC"
+    echo "  setup_interactive   Setup an interactive session on the HPC"
+    echo "  ssh  Connect to the HPC Login node"
+    echo "  qi  Start an interactive session on the HPC"
+    echo "  log Connect to the logs of running jobs on the HPC"
+    echo "  cmd  Run a command on the HPC Login node"
+}
+
+# Main script execution starts here
+if [[ $# -lt 1 ]]; then
+    usage
+    exit 1
+fi
+
+COMMAND=$1
+shift
+
+case "$COMMAND" in
+    run)
+        run_command "$@"
+        ;;
+    status)
+        status_command "$@"
+        ;;
+    setup_interactive)
+        setup_interactive_command "$@"
+        ;;
+    ssh)
+        ssh Hilbert
+        ;;
+    qi)
+        start_interactive_command "$@"
+        ;;
+    log)
+        connect_to_logs_command "$@"
+        ;;
+    sync_hf)
+        sync_hf_command "$@"
+        ;;
+    cmd)
+        ssh Hilbert -t "bash -ci '$@'"
+        ;;
+    *)
+        echo "Error: Unknown command '$COMMAND'"
+        usage
+        exit 1
+        ;;
+esac
