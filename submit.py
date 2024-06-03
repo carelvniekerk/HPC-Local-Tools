@@ -25,8 +25,8 @@ import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 
 USER_NAME = "niekerk"
-LOGIN_NODE = "hpc.rz.uni-duesseldorf.de"
-STORAGE_NODE = "storage.hpc.rz.uni-duesseldorf.de"
+LOGIN_NODE = "Hilbert"
+STORAGE_NODE = "Hilbert-Storage"
 REMOTE_BASE = "/gpfs/project/niekerk/src"
 
 
@@ -44,7 +44,7 @@ def sync_project():
         "--exclude",
         "poetry.lock",
         local_dir,
-        f"{USER_NAME}@{STORAGE_NODE}:{REMOTE_BASE}/",
+        f"{STORAGE_NODE}:{REMOTE_BASE}/",
     ]
     try:
         subprocess.run(rsync_command, check=True)
@@ -121,7 +121,7 @@ def sync_and_submit():
     print("Submitting job...")
     command = get_submission_command()
     print(command)
-    ssh_command = ["ssh", "-A", f"{USER_NAME}@{LOGIN_NODE}", command]
+    ssh_command = ["ssh", "-t", LOGIN_NODE, command]
     try:
         subprocess.run(ssh_command, check=True)
     except subprocess.CalledProcessError as e:
