@@ -102,7 +102,7 @@ def get_submission_command():
         args.walltime,
     ]
     if args.job_script_args:
-        command.extend(["-a", args.job_script_args])
+        command.extend(["-a", f'"{args.job_script_args}"'])
     if args.template:
         command.extend(["--template", args.template])
     if args.queue:
