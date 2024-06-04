@@ -6,10 +6,10 @@ export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
 
 # Command Aliases
 alias run_command="${PYTHON_INTERPRETER} ${TOOLS_DIR}/submit.py"
-alias status_command="ssh Hilbert -t \"bash -ci 'base && qs'\""
-alias setup_interactive_command="ssh Hilbert -t \"bash -ci 'base && qi-setup'\""
-alias start_interactive_command="ssh Hilbert -t \"bash -ci 'base && qi'\""
-alias connect_to_logs_command="ssh Hilbert -t \"bash -ci 'base && home && job_log'\""
+alias status_command="ssh Hilbert -t \"bash -ci 'base && clear && qs'\""
+alias setup_interactive_command="ssh Hilbert -t \"bash -ci 'base && clear && qi-setup'\""
+alias start_interactive_command="ssh Hilbert -t \"bash -ci 'base && clear && qi'\""
+alias connect_to_logs_command="ssh Hilbert -t \"bash -ci 'base && clear && home && job_log'\""
 
 # Alias for syncing local huggingface models with HPC
 alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface Hilbert-Storage:/gpfs/project/niekerk/models/"
