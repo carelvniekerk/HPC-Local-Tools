@@ -21,13 +21,12 @@
 
 import os
 import subprocess
-import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 
 USER_NAME = "niekerk"
 LOGIN_NODE = "Hilbert"
 STORAGE_NODE = "Hilbert-Storage"
-REMOTE_BASE = "/gpfs/project/niekerk/src"
+REMOTE_BASE = f"/gpfs/project/{USER_NAME}/src"
 
 
 def sync_project():
