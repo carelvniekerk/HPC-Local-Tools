@@ -5,9 +5,8 @@
 export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
 
 # Command Aliases
-alias run_command="${PYTHON_INTERPRETER} ${TOOLS_DIR}/submit.py"
+alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/submit.py"
 alias status_command="ssh Hilbert -t \"bash -ci 'base && clear && qs'\""
-alias setup_interactive_command="ssh Hilbert -t \"bash -ci 'base && clear && qi-setup'\""
 alias start_interactive_command="ssh Hilbert -t \"bash -ci 'base && clear && qi'\""
 alias connect_to_logs_command="ssh Hilbert -t \"bash -ci 'base && clear && home && job_log'\""
 
@@ -44,7 +43,7 @@ case "$COMMAND" in
         status_command "$@"
         ;;
     setup_interactive)
-        setup_interactive_command "$@"
+        ssh Hilbert -t "bash -ci 'base && clear && qi-setup $@'"
         ;;
     ssh)
         ssh Hilbert
