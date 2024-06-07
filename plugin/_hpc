@@ -5,9 +5,11 @@ _hpc() {
     commands=(
         'run:Run a python or bash script on the HPC'
         'status:Check the status of the jobs and queues on the HPC'
+        'sync_job_logs:Sync the job logs from the HPC to the local machine'
         'setup_interactive:Setup an interactive session on the HPC'
         'ssh:Connect to the HPC Login node'
         'qi:Start an interactive session on the HPC'
+        'sync_hf:Sync the local huggingface models with the HPC'
         'log:Connect to the logs of running jobs on the HPC'
         'cmd:Run a command on the HPC Login node'
     )
