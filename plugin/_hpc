@@ -4,6 +4,7 @@ _hpc() {
     local -a commands
     commands=(
         'run:Run a python or bash script on the HPC'
+        'sync_project:Sync the local project with the HPC'
         'status:Check the status of the jobs and queues on the HPC'
         'sync_job_logs:Sync the job logs from the HPC to the local machine'
         'setup_interactive:Setup an interactive session on the HPC'

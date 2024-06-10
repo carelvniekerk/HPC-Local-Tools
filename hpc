@@ -5,6 +5,7 @@
 export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
 
 # Command Aliases
+alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/sync.py"
 alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/submit.py"
 alias status_command="ssh Hilbert -t \"bash -ci 'base && clear && qs'\""
 alias start_interactive_command="ssh Hilbert -t \"bash -ci 'base && clear && qi'\""
@@ -26,6 +27,7 @@ usage() {
     echo "Usage: hpc <command>"
     echo "Commands:"
     echo "  run   Run a python or bash script on the HPC"
+    echo "  sync_project   Sync the local project with the HPC"
     echo "  status   Check the status of the jobs and queues on the HPC"
     echo "  sync_job_logs   Sync the job logs from the HPC to the local machine"
     echo "  setup_interactive   Setup an interactive session on the HPC"
@@ -47,7 +49,11 @@ shift
 
 case "$COMMAND" in
     run)
+        sync_project_command &&
         run_command "$@"
+        ;;
+    sync_project)
+        sync_project_command
         ;;
     status)
         status_command

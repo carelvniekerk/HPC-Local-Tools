@@ -23,32 +23,8 @@ import os
 import subprocess
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 
-USER_NAME = "niekerk"
 LOGIN_NODE = "Hilbert"
 STORAGE_NODE = "Hilbert-Storage"
-REMOTE_BASE = f"/gpfs/project/{USER_NAME}/src"
-
-
-def sync_project():
-    local_dir = os.getcwd()
-
-    # Sync local directory with remote directory, excluding .venv
-    print("Synchronizing files...")
-    rsync_command = [
-        "rsync",
-        "-avz",
-        "--progress",
-        "--exclude",
-        ".venv",
-        "--exclude",
-        "poetry.lock",
-        local_dir,
-        f"{STORAGE_NODE}:{REMOTE_BASE}/",
-    ]
-    try:
-        subprocess.run(rsync_command, check=True)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Error during rsync: {e}")
 
 
 def get_submission_command():
@@ -113,9 +89,7 @@ def get_submission_command():
     return command
 
 
-def sync_and_submit():
-    sync_project()
-
+def submit():
     # Submit the job via SSH
     print("Submitting job...")
     command = get_submission_command()
@@ -130,4 +104,4 @@ def sync_and_submit():
 
 
 if __name__ == "__main__":
-    sync_and_submit()
+    submit()
