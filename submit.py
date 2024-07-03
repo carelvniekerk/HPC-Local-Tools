@@ -1,6 +1,6 @@
 # coding=utf-8
 # --------------------------------------------------------------------------------
-# Project: Training Project
+# Project: HPC Local Tools
 # Author: Carel van Niekerk
 # Year: 2024
 # Group: Dialogue Systems and Machine Learning Group
@@ -18,16 +18,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License."
+"""Submit a job to the cluster."""
 
-import os
 import subprocess
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from pathlib import Path
 
 LOGIN_NODE = "Hilbert"
 STORAGE_NODE = "Hilbert-Storage"
 
 
-def get_submission_command():
+def get_submission_command() -> str:
+    """Get the command to submit the job to the cluster."""
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-n", "--job_name", help="Job Name", default="", type=str)
     parser.add_argument(
@@ -55,11 +57,7 @@ def get_submission_command():
     )
     args = parser.parse_args()
 
-    args.job_script = os.path.join(
-        "src",
-        os.path.basename(os.getcwd()),
-        args.job_script,
-    )
+    args.job_script = Path("src") / Path.cwd().name / args.job_script
 
     command = [
         "submit_job",
@@ -76,6 +74,7 @@ def get_submission_command():
         "--walltime",
         args.walltime,
     ]
+
     if args.job_script_args:
         command.extend(["-a", f'"{args.job_script_args}"'])
     if args.template:
@@ -84,21 +83,22 @@ def get_submission_command():
         command.extend(["--queue", args.queue])
     if args.accelerator_model:
         command.extend(["--accelerator_model", args.accelerator_model])
+
     command = " ".join(command)
-    command = f"bash -ci 'base && home && {command}'"
-    return command
+    return f"bash -ci 'base && home && {command}'"
 
 
-def submit():
-    # Submit the job via SSH
+def submit() -> None:
+    """Submit the job via SSH."""
     print("Submitting job...")
     command = get_submission_command()
     print(command)
     ssh_command = ["ssh", "-t", LOGIN_NODE, command]
     try:
-        subprocess.run(ssh_command, check=True)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Error during submission: {e}")
+        subprocess.run(ssh_command, check=True)  # noqa: S603
+    except subprocess.CalledProcessError as err:
+        msg = f"Error during submission: {err}"
+        raise RuntimeError(msg) from err
 
     print("Job submitted successfully.")
 

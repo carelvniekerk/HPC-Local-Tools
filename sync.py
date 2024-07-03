@@ -1,6 +1,6 @@
 # coding=utf-8
 # --------------------------------------------------------------------------------
-# Project: Training Project
+# Project: HPC Local Tools
 # Author: Carel van Niekerk
 # Year: 2024
 # Group: Dialogue Systems and Machine Learning Group
@@ -19,35 +19,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License."
 
-import os
 import subprocess
-from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from pathlib import Path
 
 USER_NAME = "niekerk"
 STORAGE_NODE = "Hilbert-Storage"
 REMOTE_BASE = f"/gpfs/project/{USER_NAME}/src"
 
 
-def sync_project():
-    local_dir = os.getcwd()
+def sync_project() -> None:
+    """Sync the project with the remote storage node."""
+    local_dir = Path.cwd()
+
+    # Check if there is a exclude file in the local directory
+    exclude_file = local_dir / ".rsync-exclude"
+
+    exclude_args = [
+        "--exclude",
+        ".venv",
+        "--exclude",
+        "poetry.lock",
+    ]
+    if exclude_file.exists():
+        exclude_args += ["--exclude-from", str(exclude_file)]
 
     # Sync local directory with remote directory, excluding .venv
     print("Synchronizing files...")
     rsync_command = [
         "rsync",
         "-avz",
-        "--progress",
-        "--exclude",
-        ".venv",
-        "--exclude",
-        "poetry.lock",
-        local_dir,
+        *exclude_args,
+        str(local_dir),
         f"{STORAGE_NODE}:{REMOTE_BASE}/",
     ]
+
     try:
-        subprocess.run(rsync_command, check=True)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Error during rsync: {e}")
+        subprocess.run(rsync_command, check=True)  # noqa: S603
+    except subprocess.CalledProcessError as err:
+        msg = f"Error during rsync: {err}"
+        raise RuntimeError(msg) from err
 
 
 if __name__ == "__main__":
