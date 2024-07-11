@@ -33,7 +33,11 @@ def get_submission_command() -> str:
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-n", "--job_name", help="Job Name", default="", type=str)
     parser.add_argument(
-        "-s", "--job_script", help="Path to job script", required=True, type=str
+        "-s",
+        "--job_script",
+        help="Path to job script",
+        required=True,
+        type=str,
     )
     parser.add_argument(
         "-a",
@@ -64,7 +68,7 @@ def get_submission_command() -> str:
         "-n",
         args.job_name,
         "-s",
-        args.job_script,
+        str(args.job_script),
         "--ncpus",
         str(args.ncpus),
         "--memory",
