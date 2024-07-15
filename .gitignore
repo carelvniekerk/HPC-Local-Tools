@@ -2,3 +2,7 @@
 .venv
 .python-version
 poetry.lock
+
+# MacOS files
+.DS_Store
+*.DS_Store
