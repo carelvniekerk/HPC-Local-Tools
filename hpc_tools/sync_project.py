@@ -22,9 +22,7 @@
 import subprocess
 from pathlib import Path
 
-USER_NAME = "niekerk"
-STORAGE_NODE = "Hilbert-Storage"
-REMOTE_BASE = f"/gpfs/project/{USER_NAME}/src"
+from constants import REMOTE_BASE, STORAGE_NODE
 
 
 def sync_project() -> None:

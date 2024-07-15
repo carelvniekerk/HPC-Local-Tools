@@ -3,7 +3,7 @@ extend = "~/.config/ruff/config.toml"
 target-version = "py312"
 
 [tool.poetry]
-name = "hpc-tools"
+name = "hpc_tools"
 version = "0.1.0"
 description = ""
 authors = ["Carel van Niekerk <cvanniekerk@hhu.de>"]

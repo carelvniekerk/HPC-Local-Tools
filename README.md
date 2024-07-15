@@ -33,16 +33,26 @@ Then activate the plugin in the `.zshrc` file by adding `hpc` to the `plugins` a
 plugins=(git hpc)
 ```
 
-### Additional setup
+To create a python virtual environment for the local tools, run the following commands:
 
-The python scripts use the variables `LOGIN_NODE = "Hilbert"` and `STORAGE_NODE = "Hilbert-Storage"` to determine the login and storage nodes of the HPC cluster. For this to work, you need to add the following to your `~/.ssh/config` file:
+```sh
+poetry install
+```
+
+## Additional setup
+
+### ssh config
+
+The python scripts use the variables `LOGIN_NODE = "Hilbert"` and `STORAGE_NODE = "Hilbert-Storage"` to determine the login and storage nodes of the HPC cluster.
+For this to work, you need to add the following to your `~/.ssh/config` file.
+Replace `ZIM_USERNAME` with your username on the HPC cluster and also see the instructions for setting the environment variables below.
 
 ```sh
 Host *
     UseKeychain yes
 
 Host Hilbert*
-    User YOUR_USERNAME
+    User ZIM_USERNAME
     Port 22
 
 Host Hilbert
@@ -51,3 +61,20 @@ Host Hilbert
 Host Hilbert-Storage
     HostName storage.hpc.rz.uni-duesseldorf.de
 ```
+
+### Environment variables
+
+Set the environment variable `ZIM_USERNAME` to your username on the HPC cluster, for example by adding the following to the `.zshrc` file:
+
+```sh
+export ZIM_USERNAME="your_zim_username" # e.g. "niekerk" or "ruppik"
+```
+
+Optionally, if you use a custom folder structure on the HPC cluster, you can set the remote base directory to which the sync_project command will sync the project files.
+For example, if you have your project code in a folder `/gpfs/project/your_zim_username/git-source` on the HPC cluster, you can set the following environment variable:
+
+```sh
+export ZIM_REMOTE_BASE="/gpfs/project/$ZIM_USERNAME/git-source"
+```
+
+See the python script `hpc_tools/constants.py` for the default values which will be used if the environment variables are not set.
