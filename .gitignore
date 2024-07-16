@@ -1,6 +1,7 @@
 .vscode
 .venv
 .python-version
+__pycache__/
 poetry.lock
 
 # MacOS files
