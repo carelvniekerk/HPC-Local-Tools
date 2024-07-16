@@ -20,11 +20,13 @@
 
 import os
 
+LOGIN_NODE = "Hilbert"
+STORAGE_NODE = "Hilbert-Storage"
+
 ZIM_USERNAME = os.environ.get(
     "ZIM_USERNAME",
     "niekerk",
 )
-STORAGE_NODE = "Hilbert-Storage"
 REMOTE_BASE = os.environ.get(
     "ZIM_REMOTE_BASE",
     f"/gpfs/project/{ZIM_USERNAME}/src",
