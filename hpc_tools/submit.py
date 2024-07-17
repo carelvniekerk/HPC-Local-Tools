@@ -20,12 +20,12 @@
 # limitations under the License."
 """Submit a job to the cluster."""
 
+import pathlib
 import subprocess
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from pathlib import Path
 
-LOGIN_NODE = "Hilbert"
-STORAGE_NODE = "Hilbert-Storage"
+from constants import LOGIN_NODE, REMOTE_BASE
 
 
 def get_submission_command() -> str:
@@ -61,14 +61,18 @@ def get_submission_command() -> str:
     )
     args = parser.parse_args()
 
-    args.job_script = Path("src") / Path.cwd().name / args.job_script
+    job_script_path = pathlib.Path(
+        REMOTE_BASE,
+        Path.cwd().name,
+        args.job_script,
+    )
 
     command = [
         "submit_job",
         "-n",
         args.job_name,
         "-s",
-        str(args.job_script),
+        str(job_script_path),
         "--ncpus",
         str(args.ncpus),
         "--memory",

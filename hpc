@@ -6,7 +6,7 @@ export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
 
 # Command Aliases
 alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_project.py"
-alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/submit.py"
+alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/submit.py"
 alias status_command="ssh Hilbert -t \"bash -ci 'base && clear && qs'\""
 alias start_interactive_command="ssh Hilbert -t \"bash -ci 'base && clear && qi'\""
 alias connect_to_logs_command="ssh Hilbert -t \"bash -ci 'base && clear && home && job_log'\""
@@ -15,15 +15,19 @@ alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/syn
 # Alias for syncing local huggingface models with HPC
 alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ Hilbert-Storage:/gpfs/project/${ZIM_USERNAME}/models/huggingface"
 
+JOB_LOGS_LOCAL_DIR="${JOB_LOGS_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs}"
+
 sync_job_logs() {
-    if [[ ! -d "${HOME}/Projects/hpc_job_logs" ]]; then
-        mkdir -p "${HOME}/Projects/hpc_job_logs"
+    echo "Syncing job logs from the HPC to the local machine at ${JOB_LOGS_LOCAL_DIR}"
+
+    if [[ ! -d "${JOB_LOGS_LOCAL_DIR}" ]]; then
+        mkdir -p "${JOB_LOGS_LOCAL_DIR}"
     fi
 
     rsync \
         -avz --delete --progress \
         "Hilbert:/gpfs/project/${ZIM_USERNAME}/job_logs/" \
-        "${HOME}/Projects/hpc_job_logs"
+        "${JOB_LOGS_LOCAL_DIR}"
 }
 
 # Function to display the usage of the tool
