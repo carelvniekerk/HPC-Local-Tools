@@ -25,8 +25,7 @@ import subprocess
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from pathlib import Path
 
-
-from constants import REMOTE_BASE, LOGIN_NODE, STORAGE_NODE
+from constants import LOGIN_NODE, REMOTE_BASE
 
 
 def get_submission_command() -> str:
