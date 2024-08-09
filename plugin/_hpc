@@ -11,6 +11,7 @@ _hpc() {
         'setup_interactive:Setup an interactive session on the HPC'
         'ssh:Connect to the HPC Login node'
         'qi:Start an interactive session on the HPC'
+        'delete_job:Delete a job on the HPC'
         'sync_hf:Sync the local huggingface models with the HPC'
         'log:Connect to the logs of running jobs on the HPC'
         'cmd:Run a command on the HPC Login node'

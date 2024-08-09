@@ -46,6 +46,7 @@ def sync_project() -> None:
     rsync_command = [
         "rsync",
         "-avz",
+        "--delete",
         *exclude_args,
         str(local_dir),
         f"{STORAGE_NODE}:{REMOTE_BASE}/",
