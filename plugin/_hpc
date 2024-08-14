@@ -17,7 +17,25 @@ _hpc() {
         'cmd:Run a command on the HPC Login node'
     )
 
-    _describe 'command' commands
+    _arguments -C \
+        "1:command:->command" \
+        "*::args:->args"
+
+    case $state in
+        command)
+            _describe 'command' commands
+            ;;
+        args)
+            case $words[1] in
+                run)
+                    _files
+                    ;;
+                *)
+                    # No further completion for other commands
+                    ;;
+            esac
+            ;;
+    esac
 }
 
 compdef _hpc hpc
