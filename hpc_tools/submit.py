@@ -85,6 +85,7 @@ def get_submission_command() -> str:
     ]
 
     if args.job_script_args:
+        args.job_script_args = args.job_script_args.replace('"', '\\"')
         command.extend(["-a", f'"{args.job_script_args}"'])
     if args.template:
         command.extend(["--template", args.template])
