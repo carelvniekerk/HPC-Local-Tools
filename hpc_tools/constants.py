@@ -25,8 +25,12 @@ STORAGE_NODE = "Hilbert-Storage"
 
 ZIM_USERNAME = os.environ.get(
     "ZIM_USERNAME",
-    "niekerk",
+    "",
 )
+if not ZIM_USERNAME:
+    msg = "ZIM_USERNAME environment variable not set."
+    raise ValueError(msg)
+
 REMOTE_BASE = os.environ.get(
     "ZIM_REMOTE_BASE",
     f"/gpfs/project/{ZIM_USERNAME}/src",

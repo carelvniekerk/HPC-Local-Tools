@@ -22,7 +22,7 @@
 import subprocess
 from pathlib import Path
 
-from constants import REMOTE_BASE, STORAGE_NODE
+from hpc_tools.constants import REMOTE_BASE, STORAGE_NODE
 
 
 def sync_results() -> None:

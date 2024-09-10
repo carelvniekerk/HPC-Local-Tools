@@ -10,8 +10,8 @@ authors = ["Carel van Niekerk <cvanniekerk@hhu.de>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-
+python = "^3.12"
+hpc-server-tools = { path = "hpc_server_tools", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
