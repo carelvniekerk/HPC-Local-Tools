@@ -26,11 +26,17 @@ import subprocess
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from pathlib import Path
 
-from constants import LOGIN_NODE, REMOTE_BASE
+from hpc_server_tools.vm_templates import JOB_DEFAULTS, templates
+from hpc_server_tools.vm_templates.types import (
+    AcceleratorModel,
+    HPCQueue,
+)
+from hpc_tools.constants import LOGIN_NODE, REMOTE_BASE
 
 
 def get_submission_command() -> str:
     """Get the command to submit the job to the cluster."""
+    template_list: list[str] = list(templates.__all__)
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-n", "--job_name", help="Job Name", default="", type=str)
     parser.add_argument(
@@ -48,16 +54,45 @@ def get_submission_command() -> str:
         type=str,
     )
 
-    parser.add_argument("--template", help="Job Queue", default="")
-    parser.add_argument("--queue", help="Job Queue", default="DSML")
-    parser.add_argument("--ncpus", help="Number of CPUs", default=2, type=int)
-    parser.add_argument("--memory", help="Amount of memory in GB", default=32, type=int)
-    parser.add_argument("--ngpus", help="Number of GPUs", default=1, type=int)
-    parser.add_argument("--accelerator_model", help="GPU model", default=None)
+    parser.add_argument(
+        "--template",
+        help=f"Machine Template. Options: {' '.join(template_list)}",
+        default="",
+    )
+    parser.add_argument(
+        "--queue",
+        help="Job Queue",
+        default=JOB_DEFAULTS.queue,
+        type=HPCQueue,
+    )
+    parser.add_argument(
+        "--ncpus",
+        help="Number of CPUs",
+        default=JOB_DEFAULTS.num_cpus,
+        type=int,
+    )
+    parser.add_argument(
+        "--memory",
+        help="Amount of memory in GB",
+        default=JOB_DEFAULTS.memory,
+        type=int,
+    )
+    parser.add_argument(
+        "--ngpus",
+        help="Number of GPUs",
+        default=JOB_DEFAULTS.num_gpus,
+        type=int,
+    )
+    parser.add_argument(
+        "--accelerator_model",
+        help="GPU model",
+        default=JOB_DEFAULTS.accelerator_model,
+        type=AcceleratorModel,
+    )
     parser.add_argument(
         "--walltime",
         help="Walltime in format hh:mm:ss, eg 08:00:00",
-        default="36:00:00",
+        default=JOB_DEFAULTS.walltime,
         type=str,
     )
     args = parser.parse_args()
@@ -85,6 +120,7 @@ def get_submission_command() -> str:
     ]
 
     if args.job_script_args:
+        args.job_script_args = args.job_script_args.replace('"', '\\"')
         command.extend(["-a", f'"{args.job_script_args}"'])
     if args.template:
         command.extend(["--template", args.template])
@@ -93,8 +129,8 @@ def get_submission_command() -> str:
     if args.accelerator_model:
         command.extend(["--accelerator_model", args.accelerator_model])
 
-    command = " ".join(command)
-    return f"bash -ci 'base && home && {command}'"
+    command_str: str = " ".join(command)
+    return f"bash -ci 'base && home && {command_str}'"
 
 
 def submit() -> None:
