@@ -11,7 +11,13 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-hpc-server-tools = { path = "hpc_server_tools", develop = true }
+hpc-server-tools = { git = "git@gitlab.cs.uni-duesseldorf.de:dsml/user_tools.git", rev = "master" }
+# If you want to manually clone the hpc server tools into the repository, you can use the following line.
+# To get the hpc server tools, uncomment the following line, 
+# and clone the repository via `git clone git@gitlab.cs.uni-duesseldorf.de:dsml/user_tools.git hpc_server_tools`
+# before running `poetry install`.
+#
+# hpc-server-tools = { path = "hpc_server_tools", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
