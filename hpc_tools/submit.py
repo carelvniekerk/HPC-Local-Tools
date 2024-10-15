@@ -31,6 +31,7 @@ from hpc_server_tools.vm_templates.types import (
     AcceleratorModel,
     HPCQueue,
 )
+
 from hpc_tools.constants import LOGIN_NODE, REMOTE_BASE
 
 
