@@ -1,6 +1,9 @@
 # HPC Local Tools
 
-This repository contains a collection of tools that are useful for HPC users. The tools are written in Python and Bash. The tools are designed to be used on a local machine, not on the HPC cluster itself. The tools are designed to help users manage their data and jobs on the HPC cluster.
+This repository contains a collection of tools that are useful for HPC users.
+The tools are written in Python and Bash.
+The tools are designed to be used on a local machine, not on the HPC cluster itself.
+The tools are designed to help users manage their data and jobs on the HPC cluster.
 
 ## Installation
 
@@ -78,3 +81,15 @@ export ZIM_REMOTE_BASE="/gpfs/project/$ZIM_USERNAME/git-source"
 ```
 
 See the python script `hpc_tools/constants.py` for the default values which will be used if the environment variables are not set.
+
+For syncing the HPC log files to the local machine, you need to set the following environment variables on the local machine:
+
+```bash
+JOB_LOGS_LOCAL_DIR
+JOB_LOGS_BACKUP_LOCAL_DIR
+```
+
+## Contributors
+
+- [Carel van Niekerk](https://gitlab.cs.uni-duesseldorf.de/niekerk), <niekerk@hhu.de>
+- [Benjamin Ruppik](https://gitlab.cs.uni-duesseldorf.de/ruppik), <mail@ruppik.net>

@@ -5,6 +5,7 @@ export HPC_TOOLS_DIR="${HOME}/.hpc_tools"
 export PATH="${HPC_TOOLS_DIR}:${PATH}"
 
 JOB_LOGS_LOCAL_DIR="${JOB_LOGS_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs}"
+JOB_LOGS_BACKUP_LOCAL_DIR="${JOB_LOGS_BACKUP_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs_backup}"
 
 # Shorthand Aliases
 alias hrun="hpc run"

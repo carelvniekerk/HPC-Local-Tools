@@ -15,7 +15,9 @@ alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/syn
 # Alias for syncing local huggingface models with HPC
 alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ Hilbert-Storage:/gpfs/project/${ZIM_USERNAME}/models/huggingface"
 
+# Load the log file environment variables
 JOB_LOGS_LOCAL_DIR="${JOB_LOGS_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs}"
+JOB_LOGS_BACKUP_LOCAL_DIR="${JOB_LOGS_BACKUP_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs_backup}"
 
 sync_job_logs() {
     echo "Syncing job logs from the HPC to the local machine at ${JOB_LOGS_LOCAL_DIR}"
@@ -30,6 +32,73 @@ sync_job_logs() {
         "${JOB_LOGS_LOCAL_DIR}"
 }
 
+backup_job_logs() {
+    # Ensure JOB_LOGS_BACKUP_LOCAL_DIR is set
+    if [[ -z "${JOB_LOGS_BACKUP_LOCAL_DIR}" ]]; then
+        echo "Error: JOB_LOGS_BACKUP_LOCAL_DIR is not set. Please define this variable."
+        return 1
+    fi
+
+    # Ensure hilbert_job_logs exists and is not empty before attempting to back it up
+    if [[ ! -d "${JOB_LOGS_LOCAL_DIR}" ]]; then
+        echo "Error: JOB_LOGS_LOCAL_DIR does not exist or is not set correctly."
+        return 1
+    fi
+
+    if [[ -z "$(ls -A ${JOB_LOGS_LOCAL_DIR})" ]]; then
+        echo "JOB_LOGS_LOCAL_DIR is empty. Skipping backup."
+        return 0
+    fi
+
+    # Create backup directory if it doesn't exist
+    if [[ ! -d "${JOB_LOGS_BACKUP_LOCAL_DIR}" ]]; then
+        mkdir -p "${JOB_LOGS_BACKUP_LOCAL_DIR}"
+    fi
+
+    # Get the current date and time in the specified format
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d_%H%M%S')
+
+    # Set the backup destination path
+    local backup_path="${JOB_LOGS_BACKUP_LOCAL_DIR}/${timestamp}_hilbert_job_logs"
+
+    # Copy the current logs directory to the backup directory
+    echo "Backing up job logs to ${backup_path}"
+    cp -R "${JOB_LOGS_LOCAL_DIR}" "${backup_path}"
+
+    if [[ $? -eq 0 ]]; then
+        echo "Backup completed successfully."
+
+        # Compress the newly created backup folder
+        echo "Compressing backup folder ${backup_path}"
+        tar -czf "${backup_path}.tar.gz" -C "${JOB_LOGS_BACKUP_LOCAL_DIR}" "$(basename ${backup_path})"
+
+        if [[ $? -eq 0 ]]; then
+            echo "Compression completed successfully."
+        else
+            echo "Failed to compress the backup folder."
+            return 1
+        fi
+        echo "Backup completed successfully."
+
+        # Empty the original job logs directory
+        echo "Clearing contents of ${JOB_LOGS_LOCAL_DIR}"
+        # Note: The :? syntax ensures that the variable is not empty or unset, 
+        # preventing accidental deletion of unintended directories
+        rm -r "${JOB_LOGS_LOCAL_DIR:?}/"*
+
+        if [[ $? -eq 0 ]]; then
+            echo "Contents of ${JOB_LOGS_LOCAL_DIR} cleared successfully."
+        else
+            echo "Failed to clear the contents of ${JOB_LOGS_LOCAL_DIR}."
+            return 1
+        fi
+    else
+        echo "Backup failed."
+        return 1
+    fi
+}
+
 # Function to display the usage of the tool
 usage() {
     echo "Usage: hpc <command>"
@@ -39,6 +108,7 @@ usage() {
     echo "  sync_results   Sync the results from the HPC to the local machine"
     echo "  status   Check the status of the jobs and queues on the HPC"
     echo "  sync_job_logs   Sync the job logs from the HPC to the local machine"
+    echo "  backup_job_logs   Backup the job logs on the local machine"
     echo "  setup_interactive   Setup an interactive session on the HPC"
     echo "  ssh  Connect to the HPC Login node"
     echo "  qi  Start an interactive session on the HPC"
@@ -73,6 +143,9 @@ case "$COMMAND" in
         ;;
     sync_job_logs)
         sync_job_logs
+        ;;
+    backup_job_logs)
+        backup_job_logs
         ;;
     setup_interactive)
         ssh Hilbert -t "bash -ci 'base && clear && qi-setup $@'"
