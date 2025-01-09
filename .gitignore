@@ -3,6 +3,7 @@
 .python-version
 __pycache__/
 uv.lock
+poetry.lock
 
 # MacOS files
 .DS_Store
