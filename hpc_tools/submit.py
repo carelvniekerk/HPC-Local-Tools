@@ -104,6 +104,9 @@ def get_submission_command() -> str:
         args.job_script,
     )
 
+    if args.walltime.startswith('"') and args.walltime.endswith('"'):
+        args.walltime = args.walltime[1:-1]
+
     command = [
         "submit_job",
         "-n",
@@ -116,8 +119,8 @@ def get_submission_command() -> str:
         str(args.memory),
         "--ngpus",
         str(args.ngpus),
-        "--walltime",
-        args.walltime,
+        f"--walltime={args.walltime}",
+        # f'\\"{args.walltime}\\"',
     ]
 
     if args.job_script_args:
