@@ -1,24 +1,37 @@
+[project]
+name = "hpc_tools"
+version = "0.1.0"
+description = ""
+authors = [{ name = "Carel van Niekerk", email = "cvanniekerk@hhu.de" }]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["hpc-server-tools"]
+
+# [tool.poetry.dependencies]
+# python = "^3.12"
+# # hpc-server-tools = { git = "git@gitlab.cs.uni-duesseldorf.de:dsml/user_tools.git", rev = "master" }
+# # If you want to manually clone the hpc server tools into the repository, you can use the following line.
+# # To get the hpc server tools, uncomment the following line, 
+# # and clone the repository via `git clone git@gitlab.cs.uni-duesseldorf.de:dsml/user_tools.git hpc_server_tools`
+# # before running `poetry install`.
+# #
+# hpc-server-tools = { path = "server_tools", develop = true }
+
+[tool.uv.sources]
+hpc-server-tools = { path = "server_tools", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# Configuration for Ruff (Python linter and formatter)
 [tool.ruff]
 extend = "~/.config/ruff/config.toml"
 target-version = "py312"
 
-[tool.poetry]
-name = "hpc_tools"
-version = "0.1.0"
-description = ""
-authors = ["Carel van Niekerk <cvanniekerk@hhu.de>"]
-readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.12"
-hpc-server-tools = { git = "git@gitlab.cs.uni-duesseldorf.de:dsml/user_tools.git", rev = "master" }
-# If you want to manually clone the hpc server tools into the repository, you can use the following line.
-# To get the hpc server tools, uncomment the following line, 
-# and clone the repository via `git clone git@gitlab.cs.uni-duesseldorf.de:dsml/user_tools.git hpc_server_tools`
-# before running `poetry install`.
-#
-# hpc-server-tools = { path = "hpc_server_tools", develop = true }
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+# Configuration for Mypy (Python static type checker)
+[tool.mypy]
+python_version = "3.12"
+[[tool.mypy.overrides]]
+module = ["hpc_server_tools.*"]
+ignore_missing_imports = true
