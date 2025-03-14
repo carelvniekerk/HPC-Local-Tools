@@ -99,6 +99,10 @@ backup_job_logs() {
     fi
 }
 
+cleanup_project_dir() {
+    ssh Hilbert-Storage -t "bash -ci 'base && home && cd $1 && cleanup'"
+}
+
 # Function to display the usage of the tool
 usage() {
     echo "Usage: hpc <command>"
@@ -167,6 +171,9 @@ case "$COMMAND" in
         ;;
     cmd)
         ssh Hilbert -t "bash -ci '$@'"
+        ;;
+    cleanup_project)
+        cleanup_project_dir "$@"
         ;;
     *)
         echo "Error: Unknown command '$COMMAND'"
