@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------------
 # Project: HPC Local Tools
 # Author: Carel van Niekerk, Benjamin Ruppik
-# Year: 2024
+# Year: 2025
 # Group: Dialogue Systems and Machine Learning Group
 # Institution: Heinrich Heine University Düsseldorf
 # --------------------------------------------------------------------------------
@@ -19,19 +19,35 @@
 # limitations under the License."
 
 import os
+import random
+import re
 
-LOGIN_NODE = "Hilbert"
-STORAGE_NODE = "Hilbert-Storage"
+
+def get_node(hpc_system: str = "HILBERT", node_type: str = "LOGIN") -> str:
+    """Get the login node for the given HPC system."""
+    regex_pattern: str = r"^(.*)\[(\d+)-(\d+)\]$"
+    login_node: str = os.environ.get(f"{hpc_system}_{node_type}_NODE", "")
+    match: re.Match[str] | None = re.search(regex_pattern, login_node)
+    if match:
+        prefix, start, end = match.groups()
+        print(prefix, start, end)
+        node_id: int = random.choice(range(int(start), int(end) + 1))  # noqa: S311
+        login_node = f"{prefix}{node_id}"
+    return login_node
+
+
+LOGIN_NODE = get_node("HILBERT", "LOGIN")
+STORAGE_NODE = get_node("HILBERT", "STORAGE")
 
 ZIM_USERNAME = os.environ.get(
-    "ZIM_USERNAME",
+    "HILBERT_USERNAME",
     "",
 )
 if not ZIM_USERNAME:
-    msg = "ZIM_USERNAME environment variable not set."
+    msg = "HILBERT_USERNAME environment variable not set."
     raise ValueError(msg)
 
 REMOTE_BASE = os.environ.get(
-    "ZIM_REMOTE_BASE",
+    "HILBERT_REMOTE_BASE",
     f"/gpfs/project/{ZIM_USERNAME}/src",
 )
