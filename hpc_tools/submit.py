@@ -32,10 +32,10 @@ from hpc_server_tools.vm_templates.types import (
     HPCQueue,
 )
 
-from hpc_tools.constants import LOGIN_NODE, REMOTE_BASE
+from hpc_tools.constants import HPCSystem, NodeType, get_node, get_username
 
 
-def get_submission_command() -> str:
+def get_submission_command() -> tuple[str, str]:
     """Get the command to submit the job to the cluster."""
     template_list: list[str] = list(templates.__all__)
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
@@ -96,10 +96,20 @@ def get_submission_command() -> str:
         default=JOB_DEFAULTS.walltime,
         type=str,
     )
+    parser.add_argument(
+        "--hpc_name",
+        help="HPC System",
+        default=HPCSystem.HILBERT,
+        type=HPCSystem,
+    )
     args = parser.parse_args()
 
+    hpc_system: HPCSystem = args.hpc_name
+    login_node: str = get_node(hpc_system, NodeType.LOGIN)
+    _, remote_base = get_username(hpc_system)
+
     job_script_path = pathlib.Path(
-        REMOTE_BASE,
+        remote_base,
         Path.cwd().name,
         args.job_script,
     )
@@ -134,15 +144,15 @@ def get_submission_command() -> str:
         command.extend(["--accelerator_model", args.accelerator_model])
 
     command_str: str = " ".join(command)
-    return f"bash -ci 'base && home && {command_str}'"
+    return f"bash -ci 'base && home && {command_str}'", login_node
 
 
 def submit() -> None:
     """Submit the job via SSH."""
     print("Submitting job...")
-    command = get_submission_command()
+    command, login_node = get_submission_command()
     print(command)
-    ssh_command = ["ssh", "-t", LOGIN_NODE, command]
+    ssh_command = ["ssh", "-t", login_node, command]
     try:
         subprocess.run(ssh_command, check=True)  # noqa: S603
     except subprocess.CalledProcessError as err:
