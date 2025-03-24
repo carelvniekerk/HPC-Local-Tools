@@ -3,17 +3,18 @@
 # Tool name: hpc
 
 export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
+eval "$(${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/constants.py --hpc_name ${ACTIVE_HPC_NAME})"
 
 # Command Aliases
-alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_project.py --hpc_name HILBERT"
+alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_project.py --hpc_name ${ACTIVE_HPC_NAME}"
 alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/submit.py"
-alias status_command="ssh HilbertLogin -t \"bash -ci 'base && clear && qs'\""
-alias start_interactive_command="ssh HilbertLogin -t \"bash -ci 'base && clear && qi'\""
-alias connect_to_logs_command="ssh HilbertLogin -t \"bash -ci 'base && clear && home && job_log'\""
+alias status_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qs'\""
+alias start_interactive_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qi'\""
+alias connect_to_logs_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && home && job_log'\""
 alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_results.py"
 
 # Alias for syncing local huggingface models with HPC
-alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ Hilbert-Storage:/gpfs/project/${ZIM_USERNAME}/models/huggingface"
+alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ ${HPC_TOOLS_STORAGE_NODE}:/gpfs/project/${ZIM_USERNAME}/models/huggingface"
 
 # Load the log file environment variables
 JOB_LOGS_LOCAL_DIR="${JOB_LOGS_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs}"
@@ -28,7 +29,7 @@ sync_job_logs() {
 
     rsync \
         -avz --delete --progress \
-        "HilbertStorage:/gpfs/project/${ZIM_USERNAME}/job_logs/" \
+        "${HPC_TOOLS_STORAGE_NODE}:/gpfs/project/${HPC_TOOLS_USERNAME}/job_logs/" \
         "${JOB_LOGS_LOCAL_DIR}"
 }
 
@@ -100,7 +101,7 @@ backup_job_logs() {
 }
 
 cleanup_project_dir() {
-    ssh HilbertStorage -t "bash -ci 'base && home && cd $1 && cleanup'"
+    ssh $HPC_TOOLS_STORAGE_NODE -t "bash -ci 'base && home && cd $1 && cleanup'"
 }
 
 # Function to display the usage of the tool
@@ -152,10 +153,10 @@ case "$COMMAND" in
         backup_job_logs
         ;;
     setup_interactive)
-        ssh HilbertLogin -t "bash -ci 'base && clear && qi-setup $@'"
+        ssh $HPC_TOOLS_LOGIN_NODE -t "bash -ci 'base && clear && qi-setup $@'"
         ;;
     ssh)
-        ssh HilbertLogin
+        ssh $HPC_TOOLS_LOGIN_NODE
         ;;
     qi)
         start_interactive_command
@@ -164,13 +165,13 @@ case "$COMMAND" in
         connect_to_logs_command
         ;;
     delete_job)
-        ssh HilbertLogin -t "bash -ci 'base && clear && qdel $@'"
+        ssh $HPC_TOOLS_LOGIN_NODE -t "bash -ci 'base && clear && qdel $@'"
         ;;
     sync_hf)
         sync_hf_command
         ;;
     cmd)
-        ssh HilbertLogin -t "bash -ci '$@'"
+        ssh $HPC_TOOLS_LOGIN_NODE -t "bash -ci '$@'"
         ;;
     cleanup_project)
         cleanup_project_dir "$@"
