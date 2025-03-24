@@ -21,12 +21,30 @@
 import os
 import random
 import re
+from enum import StrEnum, auto
 
 
-def get_node(hpc_system: str = "HILBERT", node_type: str = "LOGIN") -> str:
+class HPCSystem(StrEnum):
+    """HPC systems available for the user."""
+
+    HILBERT = "HILBERT"
+    NOCTUA2 = "NOCTUA2"
+
+
+class NodeType(StrEnum):
+    """Node types available for the user."""
+
+    LOGIN = auto()
+    STORAGE = auto()
+
+
+def get_node(
+    hpc_system: HPCSystem = HPCSystem.HILBERT,
+    node_type: NodeType = NodeType.LOGIN,
+) -> str:
     """Get the login node for the given HPC system."""
     regex_pattern: str = r"^(.*)\[(\d+)-(\d+)\]$"
-    login_node: str = os.environ.get(f"{hpc_system}_{node_type}_NODE", "")
+    login_node: str = os.environ.get(f"{hpc_system}_{node_type}_NODE".upper(), "")
     match: re.Match[str] | None = re.search(regex_pattern, login_node)
     if match:
         prefix, start, end = match.groups()
@@ -36,18 +54,21 @@ def get_node(hpc_system: str = "HILBERT", node_type: str = "LOGIN") -> str:
     return login_node
 
 
-LOGIN_NODE = get_node("HILBERT", "LOGIN")
-STORAGE_NODE = get_node("HILBERT", "STORAGE")
+def get_username(hpc_system: HPCSystem = HPCSystem.HILBERT) -> tuple[str, str]:
+    """Get the username for the given HPC system."""
+    username: str = os.environ.get(f"{hpc_system}_USERNAME".upper(), "")
+    if not username:
+        msg = f"{hpc_system.value.upper()}_USERNAME environment variable not set."
+        raise ValueError(msg)
+    remote_base_path: str = os.environ.get(
+        f"{hpc_system}_REMOTE_BASE".upper(),
+        f"/gpfs/project/{username}/src",
+    )
 
-ZIM_USERNAME = os.environ.get(
-    "HILBERT_USERNAME",
-    "",
-)
-if not ZIM_USERNAME:
-    msg = "HILBERT_USERNAME environment variable not set."
-    raise ValueError(msg)
+    return username, remote_base_path
 
-REMOTE_BASE = os.environ.get(
-    "HILBERT_REMOTE_BASE",
-    f"/gpfs/project/{ZIM_USERNAME}/src",
-)
+
+LOGIN_NODE = get_node()
+STORAGE_NODE = get_node(node_type=NodeType.STORAGE)
+
+USERNAME, REMOTE_BASE = get_username()
