@@ -5,11 +5,11 @@
 export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
 
 # Command Aliases
-alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_project.py"
+alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_project.py --hpc_name HILBERT"
 alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/submit.py"
-alias status_command="ssh Hilbert -t \"bash -ci 'base && clear && qs'\""
-alias start_interactive_command="ssh Hilbert -t \"bash -ci 'base && clear && qi'\""
-alias connect_to_logs_command="ssh Hilbert -t \"bash -ci 'base && clear && home && job_log'\""
+alias status_command="ssh HilbertLogin -t \"bash -ci 'base && clear && qs'\""
+alias start_interactive_command="ssh HilbertLogin -t \"bash -ci 'base && clear && qi'\""
+alias connect_to_logs_command="ssh HilbertLogin -t \"bash -ci 'base && clear && home && job_log'\""
 alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_results.py"
 
 # Alias for syncing local huggingface models with HPC
@@ -28,7 +28,7 @@ sync_job_logs() {
 
     rsync \
         -avz --delete --progress \
-        "Hilbert:/gpfs/project/${ZIM_USERNAME}/job_logs/" \
+        "HilbertStorage:/gpfs/project/${ZIM_USERNAME}/job_logs/" \
         "${JOB_LOGS_LOCAL_DIR}"
 }
 
@@ -100,7 +100,7 @@ backup_job_logs() {
 }
 
 cleanup_project_dir() {
-    ssh Hilbert-Storage -t "bash -ci 'base && home && cd $1 && cleanup'"
+    ssh HilbertStorage -t "bash -ci 'base && home && cd $1 && cleanup'"
 }
 
 # Function to display the usage of the tool
@@ -152,10 +152,10 @@ case "$COMMAND" in
         backup_job_logs
         ;;
     setup_interactive)
-        ssh Hilbert -t "bash -ci 'base && clear && qi-setup $@'"
+        ssh HilbertLogin -t "bash -ci 'base && clear && qi-setup $@'"
         ;;
     ssh)
-        ssh Hilbert
+        ssh HilbertLogin
         ;;
     qi)
         start_interactive_command
@@ -164,13 +164,13 @@ case "$COMMAND" in
         connect_to_logs_command
         ;;
     delete_job)
-        ssh Hilbert -t "bash -ci 'base && clear && qdel $@'"
+        ssh HilbertLogin -t "bash -ci 'base && clear && qdel $@'"
         ;;
     sync_hf)
         sync_hf_command
         ;;
     cmd)
-        ssh Hilbert -t "bash -ci '$@'"
+        ssh HilbertLogin -t "bash -ci '$@'"
         ;;
     cleanup_project)
         cleanup_project_dir "$@"
