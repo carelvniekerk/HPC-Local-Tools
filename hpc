@@ -7,11 +7,11 @@ eval "$(${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/constants.py --hpc_name
 
 # Command Aliases
 alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_project.py --hpc_name ${ACTIVE_HPC_NAME}"
-alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/submit.py"
+alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/submit.py --hpc_name ${ACTIVE_HPC_NAME}"
 alias status_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qs'\""
 alias start_interactive_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qi'\""
 alias connect_to_logs_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && home && job_log'\""
-alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_results.py"
+alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_results.py --hpc_name ${ACTIVE_HPC_NAME}"
 
 # Alias for syncing local huggingface models with HPC
 alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ ${HPC_TOOLS_STORAGE_NODE}:/gpfs/project/${ZIM_USERNAME}/models/huggingface"
