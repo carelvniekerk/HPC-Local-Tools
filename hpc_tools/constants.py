@@ -21,6 +21,7 @@
 import os
 import random
 import re
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from enum import StrEnum, auto
 
 
@@ -48,7 +49,6 @@ def get_node(
     match: re.Match[str] | None = re.search(regex_pattern, login_node)
     if match:
         prefix, start, end = match.groups()
-        print(prefix, start, end)
         node_id: int = random.choice(range(int(start), int(end) + 1))  # noqa: S311
         login_node = f"{prefix}{node_id}"
     return login_node
@@ -68,7 +68,21 @@ def get_username(hpc_system: HPCSystem = HPCSystem.HILBERT) -> tuple[str, str]:
     return username, remote_base_path
 
 
-LOGIN_NODE = get_node()
-STORAGE_NODE = get_node(node_type=NodeType.STORAGE)
+if __name__ == "__main__":
+    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        "--hpc_name",
+        type=HPCSystem,
+        default=HPCSystem.HILBERT,
+        help="HPC system to use.",
+    )
+    hpc_system: HPCSystem = parser.parse_args().hpc_name
 
-USERNAME, REMOTE_BASE = get_username()
+    login_node: str = get_node(hpc_system=hpc_system, node_type=NodeType.LOGIN)
+    storage_node: str = get_node(hpc_system=hpc_system, node_type=NodeType.STORAGE)
+    username, remote_base_path = get_username(hpc_system=hpc_system)
+
+    print(f'export HPC_TOOLS_LOGIN_NODE="{login_node}"')
+    print(f'export HPC_TOOLS_STORAGE_NODE="{storage_node}"')
+    print(f'export HPC_TOOLS_USERNAME="{username}"')
+    print(f'export HPC_TOOLS_REMOTE_BASE="{remote_base_path}"')
