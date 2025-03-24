@@ -64,7 +64,7 @@ def sync_project() -> None:
     ]
 
     try:
-        print(rsync_command)
+        print("Synchronizing files...")
         subprocess.run(rsync_command, check=True)  # noqa: S603
     except subprocess.CalledProcessError as err:
         msg = f"Error during rsync: {err}"
