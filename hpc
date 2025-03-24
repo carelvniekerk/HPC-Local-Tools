@@ -17,8 +17,9 @@ alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/syn
 alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ ${HPC_TOOLS_STORAGE_NODE}:/gpfs/project/${ZIM_USERNAME}/models/huggingface"
 
 # Load the log file environment variables
-JOB_LOGS_LOCAL_DIR="${JOB_LOGS_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs}"
-JOB_LOGS_BACKUP_LOCAL_DIR="${JOB_LOGS_BACKUP_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs_backup}"
+eval $(echo "export JOB_LOGS_REMOTE_DIR=\$${ACTIVE_HPC_NAME}_JOB_LOGS_PATH")
+export JOB_LOGS_LOCAL_DIR="${JOB_LOGS_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs}"
+export JOB_LOGS_BACKUP_LOCAL_DIR="${JOB_LOGS_BACKUP_LOCAL_DIR:-${HOME}/Projects/hpc_job_logs_backup}"
 
 sync_job_logs() {
     echo "Syncing job logs from the HPC to the local machine at ${JOB_LOGS_LOCAL_DIR}"
@@ -29,7 +30,7 @@ sync_job_logs() {
 
     rsync \
         -avz --delete --progress \
-        "${HPC_TOOLS_STORAGE_NODE}:/gpfs/project/${HPC_TOOLS_USERNAME}/job_logs/" \
+        "${HPC_TOOLS_STORAGE_NODE}:${JOB_LOGS_REMOTE_DIR}" \
         "${JOB_LOGS_LOCAL_DIR}"
 }
 
