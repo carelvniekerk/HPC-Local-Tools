@@ -56,7 +56,6 @@ def sync_results() -> None:
         [
             "rsync",
             "-avz",
-            "--delete",
             f"{storage_node}:{remote_base}/{local_dir.name}/{dir_name}",
             f"{Path(dir_name).parent}/",
         ]
