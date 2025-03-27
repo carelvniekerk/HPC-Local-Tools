@@ -16,6 +16,8 @@ _hpc() {
         'sync_hf:Sync the local huggingface models with the HPC'
         'log:Connect to the logs of running jobs on the HPC'
         'cmd:Run a command on the HPC Login node'
+        'cleanup_project:Cleanup the project directory on the HPC'
+        'activate:Activate a specific HPC system (e.g., hilbert, noctua2)'
     )
 
     _arguments -C \
