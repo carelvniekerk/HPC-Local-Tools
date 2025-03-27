@@ -30,6 +30,7 @@ class HPCSystem(StrEnum):
 
     HILBERT = "HILBERT"
     NOCTUA2 = "NOCTUA2"
+    LAMARR = "LAMARR"
 
 
 class NodeType(StrEnum):
