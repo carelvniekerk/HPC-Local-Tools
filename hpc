@@ -14,7 +14,8 @@ alias connect_to_logs_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base &
 alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_results.py --hpc_name ${ACTIVE_HPC_NAME}"
 
 # Alias for syncing local huggingface models with HPC
-alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ ${HPC_TOOLS_STORAGE_NODE}:/gpfs/project/${HPC_TOOLS_USERNAME}/models/huggingface"
+eval $(echo "export HPC_HUGGINGFACE_CACHE=\$${ACTIVE_HPC_NAME}_HUGGINGFACE_CACHE")
+alias sync_hf_command="rsync -avz --delete --progress ${HOME}/.cache/huggingface/ ${HPC_TOOLS_STORAGE_NODE}:${HPC_HUGGINGFACE_CACHE}"
 
 # Load the log file environment variables
 eval $(echo "export JOB_LOGS_REMOTE_DIR=\$${ACTIVE_HPC_NAME}_JOB_LOGS_PATH")
