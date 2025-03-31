@@ -31,7 +31,7 @@ sync_job_logs() {
 
     rsync \
         -avz --delete --progress \
-        "${HPC_TOOLS_STORAGE_NODE}:${JOB_LOGS_REMOTE_DIR}" \
+        "${HPC_TOOLS_STORAGE_NODE}:${JOB_LOGS_REMOTE_DIR}/" \
         "${JOB_LOGS_LOCAL_DIR}"
 }
 
