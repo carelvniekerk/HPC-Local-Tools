@@ -10,7 +10,6 @@ alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/syn
 alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/submit.py --hpc_name ${ACTIVE_HPC_NAME}"
 alias status_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qs'\""
 alias start_interactive_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qi'\""
-alias connect_to_logs_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && home && job_log'\""
 alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_results.py --hpc_name ${ACTIVE_HPC_NAME}"
 
 # Alias for syncing local huggingface models with HPC
@@ -106,6 +105,11 @@ cleanup_project_dir() {
     ssh $HPC_TOOLS_STORAGE_NODE -t "bash -ci 'base && home && cd $1 && cleanup'"
 }
 
+# alias connect_to_logs_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && home && job_log'\""
+connect_to_logs_command() {
+    ssh $HPC_TOOLS_LOGIN_NODE -t "bash -ci 'base && clear && home && job_log $1'"
+}
+
 # Function to activate a specific HPC system
 activate_hpc_system() {
     local requested_name="$1"
@@ -195,7 +199,7 @@ case "$COMMAND" in
         start_interactive_command
         ;;
     log)
-        connect_to_logs_command
+        connect_to_logs_command "$@"
         ;;
     delete_job)
         ssh $HPC_TOOLS_LOGIN_NODE -t "bash -ci 'base && clear && qdel $@'"
