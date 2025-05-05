@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = [{ name = "Carel van Niekerk", email = "cvanniekerk@hhu.de" }]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = ["hpc-server-tools"]
 
 # [tool.poetry.dependencies]
