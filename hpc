@@ -3,14 +3,14 @@
 # Tool name: hpc
 
 export PYTHON_INTERPRETER="${HPC_TOOLS_DIR}/.venv/bin/python3"
-eval "$(${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/constants.py --hpc_name ${ACTIVE_HPC_NAME})"
+eval "$(${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/src/hpc_tools/constants.py --hpc_name ${ACTIVE_HPC_NAME})"
 
 # Command Aliases
-alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_project.py --hpc_name ${ACTIVE_HPC_NAME}"
-alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/submit.py --hpc_name ${ACTIVE_HPC_NAME}"
+alias sync_project_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/src/hpc_tools/sync_project.py --hpc_name ${ACTIVE_HPC_NAME}"
+alias run_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/src/hpc_tools/submit.py --hpc_name ${ACTIVE_HPC_NAME}"
 alias status_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qs'\""
 alias start_interactive_command="ssh ${HPC_TOOLS_LOGIN_NODE} -t \"bash -ci 'base && clear && qi'\""
-alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/hpc_tools/sync_results.py --hpc_name ${ACTIVE_HPC_NAME}"
+alias sync_results_command="${PYTHON_INTERPRETER} ${HPC_TOOLS_DIR}/src/hpc_tools/sync_results.py --hpc_name ${ACTIVE_HPC_NAME}"
 
 # Alias for syncing local huggingface models with HPC
 eval $(echo "export HPC_HUGGINGFACE_CACHE=\$${ACTIVE_HPC_NAME}_HUGGINGFACE_CACHE")
