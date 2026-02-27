@@ -20,13 +20,24 @@
 # limitations under the License."
 
 import subprocess
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from pathlib import Path
 
-from hpc_tools.constants import REMOTE_BASE, STORAGE_NODE
+from hpc_tools.constants import HPCSystem, NodeType, get_node, get_username
 
 
 def sync_results() -> None:
     """Sync the project with the remote storage node."""
+    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument(
+        "--hpc_name",
+        help="HPC System",
+        default=HPCSystem.HILBERT,
+        type=HPCSystem,
+    )
+    hpc_system: HPCSystem = parser.parse_args().hpc_name
+    storage_node: str = get_node(hpc_system, NodeType.STORAGE)
+    _, remote_base = get_username(hpc_system)
     local_dir = Path.cwd()
 
     # Results sync directories
@@ -45,8 +56,7 @@ def sync_results() -> None:
         [
             "rsync",
             "-avz",
-            "--delete",
-            f"{STORAGE_NODE}:{REMOTE_BASE}/{local_dir.name}/{dir_name}",
+            f"{storage_node}:{remote_base}/{local_dir.name}/{dir_name}",
             f"{Path(dir_name).parent}/",
         ]
         for dir_name in sync_dirs
